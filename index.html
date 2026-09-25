@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhiteLisa — Инженерные Системы Котельной</title>
+    
+    <!-- Подключаем внешние стили (Часть 2) -->
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Подключаем библиотеки Three.js и загрузчики из CDN -->
+    <script src="https://cloudflare.com"></script>
+    <script src="https://jsdelivr.net"></script>
+    <script src="https://jsdelivr.net"></script>
+</head>
+<body>
+
+    <!-- Контейнер для 3D холста движка Three.js -->
+    <div id="canvas-container"></div>
+
+    <!-- Адаптивная панель управления (WhiteLisa) -->
+    <div class="ui-panel">
+        <h1>WhiteLisa</h1>
+        <h2>Инженерные сети</h2>
+        
+        <!-- Ползунок Section Box (Границы 3D-вида) -->
+        <div class="control-group">
+            <div class="slider-label">
+                <span>Граница 3D-вида (Высота)</span>
+                <span id="clip-val">100%</span>
+            </div>
+            <input type="range" id="clip-slider" min="0" max="100" value="100">
+        </div>
+
+        <!-- Ползунок плавного скрытия/прозрачности стен -->
+        <div class="control-group">
+            <div class="slider-label">
+                <span>Прозрачность стен</span>
+                <span id="opacity-val">0%</span>
+            </div>
+            <input type="range" id="opacity-slider" min="0" max="100" value="0">
+        </div>
+
+        <!-- Кнопки интерактива и открытия документации -->
+        <button class="btn-action" id="btn-load-model">Открыть проект</button>
+        <button class="btn-action" id="btn-view-pdf">Посмотреть документацию</button>
+        
+        <!-- Коммерческий графический акцент из файла red.png -->
+        <div class="brand-accent"></div>
+    </div>
+
+    <!-- Адаптивное модальное окно встроенного просмотра PDF чертежей -->
+    <div id="pdf-overlay">
+        <span class="close-pdf" id="btn-close-pdf">&times;</span>
+        <iframe id="pdf-frame" src="document.pdf" type="application/pdf"></iframe>
+    </div>
+
+    <!-- Подключаем основной скрипт движка и логики (Часть 3) -->
+    <script src="app.js"></script>
+</body>
+</html>
