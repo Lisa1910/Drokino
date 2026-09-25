@@ -22,7 +22,7 @@ container.appendChild(renderer.domElement);
 const controls = new THREE.OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;         // Включаем масляную инерцию
 controls.dampingFactor = 0.05;         // Коэффициент плавности затухания
-controls.maxPolarAngle = Math.PI / 2 - 0.03; // Запрет заглядывать под пол (отмостку)
+controls.maxPolarAngle = Math.PI / 2 - 0.03; // Запрет заглядывать под пол
 controls.minDistance = 2;              // Максимальное приближение
 controls.maxDistance = 50;             // Максимальное удаление
 
@@ -37,21 +37,25 @@ dirLight1.position.set(15, 30, 15);
 dirLight1.castShadow = true;
 scene.add(dirLight1);
 
-const dirLight2 = new THREE.DirectionalLight(0xd4c7b6, 0.3); // Мягкий карамельный подсвет сзади
+const dirLight2 = new THREE.DirectionalLight(0xd4c7b6, 0.3); // Карамельный подсвет сзади
 dirLight2.position.set(-15, 10, -15);
 scene.add(dirLight2);
 
 // ==========================================================================
 // ЛОГИКА ГРАНИЦЫ 3Д-ВИДА (SECTION BOX) И МАТЕРИАЛОВ
 // ==========================================================================
-let modelHeight = 4.5; // Базовая начальная высота модели (подстраивается под проект)
-// Создаем инвертированную горизонтальную плоскость отсечения (смотрит вниз)
+let modelHeight = 4.5; 
 const clipPlane = new THREE.Plane(new THREE.Vector3(0, -1, 0), modelHeight);
+let wallMaterials = []; 
 
-let wallMaterials = []; // Сюда соберем все материалы стен для управления прозрачностью
+// НАСТРОЙКА ДЕКОДЕРА DRACO (Чтобы читать сжатый из Revit файл)
+const dracoLoader = new THREE.DRACOLoader();
+// Подключаем официальные библиотеки распаковки от Google прямо из CDN
+dracoLoader.setDecoderPath('https://gstatic.com');
 
-// Инициализация загрузчика GLB моделей
+// Инициализация загрузчика GLB моделей и привязка Draco
 const loader = new THREE.GLTFLoader();
+loader.setDRACOLoader(dracoLoader);
 
 function initModelLoading() {
     loader.load('model.glb', function(gltf) {
@@ -62,15 +66,13 @@ function initModelLoading() {
                 child.castShadow = true;
                 child.receiveShadow = true;
 
-                // Привязываем плоскость обрезки к каждому элементу
                 child.material.clippingPlanes = [ clipPlane ];
                 child.material.clipShadows = true;
 
-                // Фильтруем материалы архитектурных стен по их имени из Revit
                 const meshName = child.name.toLowerCase();
                 if (meshName.includes('wall') || meshName.includes('стена') || meshName.includes('основная стена')) {
                     child.material.transparent = true;
-                    child.material.side = THREE.DoubleSide; // Двухстороннее отображение при резе
+                    child.material.side = THREE.DoubleSide; 
                     
                     if (!wallMaterials.includes(child.material)) {
                         wallMaterials.push(child.material);
@@ -79,13 +81,12 @@ function initModelLoading() {
             }
         });
         
-        // Центрируем модель в пространстве сцены
+        // Центрируем модель
         const box = new THREE.Box3().setFromObject(model);
         const center = box.getCenter(new THREE.Vector3());
         model.position.x -= center.x;
         model.position.z -= center.z;
         
-        // Корректируем глобальную высоту подрезки по реальным габаритам модели
         modelHeight = box.max.y;
         clipPlane.constant = modelHeight;
         
@@ -95,38 +96,31 @@ function initModelLoading() {
     });
 }
 
-// Запускаем автоматический импорт
 initModelLoading();
 
 // ==========================================================================
 // ИНТЕРАКТИВНЫЕ ПОЛЗУНКИ И ИНТЕРФЕЙС
 // ==========================================================================
-
-// 1. Управление кубом разрезки (Section Box)
 const clipSlider = document.getElementById('clip-slider');
 const clipValText = document.getElementById('clip-val');
 
 clipSlider.addEventListener('input', (e) => {
     let pct = e.target.value;
     clipValText.innerText = pct + '%';
-    // Динамически сдвигаем константу плоскости по высоте Y
     clipPlane.constant = (pct / 100) * modelHeight;
 });
 
-// 2. Управление прозрачностью стен
 const opacitySlider = document.getElementById('opacity-slider');
 const opacityValText = document.getElementById('opacity-val');
 
 opacitySlider.addEventListener('input', (e) => {
     let val = e.target.value;
     opacityValText.innerText = val + '%';
-    // Плавно меняем альфа-канал у всех отфильтрованных материалов стен
     wallMaterials.forEach(mat => {
         mat.opacity = 1 - (val / 100);
     });
 });
 
-// 3. Кнопка "Открыть проект" (Сброс камеры на исходную точку)
 document.getElementById('btn-load-model').addEventListener('click', () => {
     controls.reset();
     camera.position.set(12, 10, 15);
@@ -138,7 +132,6 @@ document.getElementById('btn-load-model').addEventListener('click', () => {
     wallMaterials.forEach(mat => mat.opacity = 1);
 });
 
-// 4. Логика выплывающего окна просмотра PDF чертежей
 const pdfOverlay = document.getElementById('pdf-overlay');
 document.getElementById('btn-view-pdf').addEventListener('click', () => {
     pdfOverlay.style.display = 'flex';
@@ -158,10 +151,9 @@ function onWindowResize() {
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
-// Постоянный цикл рендеринга (Анимация кадров)
 function animate() {
     requestAnimationFrame(animate);
-    controls.update(); // Важно для отработки плавного затухания OrbitControls
+    controls.update(); 
     renderer.render(scene, camera);
 }
 
