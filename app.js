@@ -48,11 +48,12 @@ let modelHeight = 4.5;
 const clipPlane = new THREE.Plane(new THREE.Vector3(0, -1, 0), modelHeight);
 let wallMaterials = []; 
 
-// Прямой загрузчик несжатых стандартных GLB моделей
+// Прямой загрузчик GLB моделей
 const loader = new THREE.GLTFLoader();
 
 function initModelLoading() {
-    loader.load('model.glb', function(gltf) {
+    // Вставляем твою прямую ссылку на Яндекс.Диск через clck.ru
+    loader.load('https://clck.ru/3W6NTY', function(gltf) {
         const model = gltf.scene;
         
         model.traverse((child) => {
