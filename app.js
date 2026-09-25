@@ -48,14 +48,8 @@ let modelHeight = 4.5;
 const clipPlane = new THREE.Plane(new THREE.Vector3(0, -1, 0), modelHeight);
 let wallMaterials = []; 
 
-// НАСТРОЙКА ДЕКОДЕРА DRACO (Чтобы читать сжатый из Revit файл)
-const dracoLoader = new THREE.DRACOLoader();
-// Подключаем официальные библиотеки распаковки от Google прямо из CDN
-dracoLoader.setDecoderPath('https://gstatic.com');
-
-// Инициализация загрузчика GLB моделей и привязка Draco
+// Прямой загрузчик несжатых стандартных GLB моделей
 const loader = new THREE.GLTFLoader();
-loader.setDRACOLoader(dracoLoader);
 
 function initModelLoading() {
     loader.load('model.glb', function(gltf) {
@@ -66,9 +60,11 @@ function initModelLoading() {
                 child.castShadow = true;
                 child.receiveShadow = true;
 
+                // Привязываем плоскость обрезки
                 child.material.clippingPlanes = [ clipPlane ];
                 child.material.clipShadows = true;
 
+                // Фильтруем стены по имени из Revit
                 const meshName = child.name.toLowerCase();
                 if (meshName.includes('wall') || meshName.includes('стена') || meshName.includes('основная стена')) {
                     child.material.transparent = true;
