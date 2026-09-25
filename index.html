@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WhiteLisa — Инженерные Системы Котельной</title>
     
-    <!-- Подключаем внешние стили -->
+    <!-- Подключаем внешние стили (style.css) -->
     <link rel="stylesheet" href="style.css">
     
     <!-- Подключаем библиотеки Three.js и загрузчики из CDN -->
@@ -55,7 +55,18 @@
         <iframe id="pdf-frame" src="document.pdf" type="application/pdf"></iframe>
     </div>
 
-    <!-- Подключаем основной скрипт движка и логики -->
+    <!-- Подключаем основной скрипт движка и логики (app.js) -->
     <script src="app.js"></script>
+
+    <!-- Блок автоматического запуска файла оптимизации интерфейса (Service Worker) -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./optimize.js')
+                    .then((reg) => console.log('[WhiteLisa UI] Оптимизация загрузки активирована!', reg.scope))
+                    .catch((err) => console.error('[WhiteLisa UI] Ошибка инициализации оптимизатора:', err));
+            });
+        }
+    </script>
 </body>
 </html>
