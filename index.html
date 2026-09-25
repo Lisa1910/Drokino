@@ -2,72 +2,120 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WhiteLisa — Инженерные Системы Котельной</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>WhiteLisa — Инженерные Системы Котельной в 3D</title>
     
-    <!-- Подключаем внешние стили (style.css) -->
+    <!-- Главные стили премиального бумажного интерфейса (Часть 2) -->
     <link rel="stylesheet" href="style.css">
     
-    <!-- Локальные скрипты движка -->
-    <script src="three.min.js"></script>
-    <script src="OrbitControls.js"></script>
-    <script src="GLTFLoader.js"></script>
+    <!-- Автономные локальные библиотеки ядра графического движка -->
+    <script src="three.min.js" defer></script>
+    <script src="OrbitControls.js" defer></script>
+    <script src="GLTFLoader.js" defer></script>
 </head>
 <body>
 
-    <!-- Контейнер для 3D холста движка Three.js -->
-    <div id="canvas-container"></div>
+    <!-- Системный контейнер рендеринга WebGL (Сюда Three.js выводит 3D) -->
+    <div id="canvas-container" role="img" aria-label="3D модель инженерных сетей котельной"></div>
 
-    <!-- Адаптивная панель управления (WhiteLisa) -->
-    <div class="ui-panel">
-        <h1>WhiteLisa</h1>
-        <h2>Инженерные сети</h2>
-        
-        <!-- Ползунок Section Box (Границы 3D-вида) -->
-        <div class="control-group">
-            <div class="slider-label">
-                <span>Граница 3D-вида (Высота)</span>
-                <span id="clip-val">100%</span>
+    <!-- Интерактивный экран загрузки (Loader Overlay) с трекером бинарных томов -->
+    <div id="preloader-overlay">
+        <div class="loader-card">
+            <div class="loader-logo">WhiteLisa</div>
+            <div class="loader-sub">Инициализация графического движка...</div>
+            
+            <!-- Индикатор общего прогресса склейки модели -->
+            <div class="progress-bar-container">
+                <div id="progress-bar-fill"></div>
             </div>
-            <input type="range" id="clip-slider" min="0" max="100" value="100">
-        </div>
-
-        <!-- Ползунок плавного скрытия/прозрачности стен -->
-        <div class="control-group">
-            <div class="slider-label">
-                <span>Прозрачность стен</span>
-                <span id="opacity-val">0%</span>
+            
+            <!-- Текстовый статус для контроля загрузки каждого тома из 8 -->
+            <div class="loader-status">
+                <span id="loader-text-status">Чтение архива данных...</span>
+                <span id="loader-pct-status">0%</span>
             </div>
-            <input type="range" id="opacity-slider" min="0" max="100" value="0">
         </div>
-
-        <!-- Кнопки интерактива и открытия документации -->
-        <button class="btn-action" id="btn-load-model">Открыть проект</button>
-        <button class="btn-action" id="btn-view-pdf">Посмотреть документацию</button>
-        
-        <!-- Коммерческий графический акцент из файла red.png -->
-        <div class="brand-accent"></div>
     </div>
 
-    <!-- Адаптивное модальное окно встроенного просмотра PDF чертежей -->
-    <div id="pdf-overlay">
-        <span class="close-pdf" id="btn-close-pdf">&times;</span>
-        <!-- Используем защищенный просмотрщик от Mozilla, чтобы обойти блокировки браузеров -->
-        <iframe id="pdf-frame" src="" type="application/pdf"></iframe>
+    <!-- Модальный экран критических ошибок (Error Boundary) -->
+    <div id="error-overlay" style="display: none;">
+        <div class="error-card">
+            <h3>Ошибка инициализации проекта</h3>
+            <p id="error-message-text">Не удалось собрать бинарные тома модели. Возможно, повреждено соединение с сервером.</p>
+            <button class="btn-action btn-error-retry" onclick="window.location.reload();">Повторить попытку</button>
+        </div>
     </div>
 
-    <!-- Подключаем основной скрипт движка и логики (app.js) -->
-    <script src="app.js"></script>
+    <!-- Адаптивная панель управления WhiteLisa (Эстетика слепого тиснения) -->
+    <main class="ui-panel" role="region" aria-label="Панель инструментов">
+        <header class="panel-header">
+            <h1>WhiteLisa</h1>
+            <h2>Инженерные сети котельной</h2>
+        </header>
+        
+        <!-- Инструмент 1: Граница 3D-вида (Динамическая секущая плоскость / Section Box) -->
+        <section class="control-group" aria-labelledby="label-clip">
+            <div class="slider-label">
+                <span id="label-clip">Граница 3D-вида (Высота)</span>
+                <span id="clip-val" class="badge-value">100%</span>
+            </div>
+            <div class="input-wrapper">
+                <input type="range" id="clip-slider" min="0" max="100" value="100" step="1" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100">
+            </div>
+        </section>
 
-    <!-- Блок автоматического запуска файла оптимизации интерфейса (Service Worker) -->
+        <!-- Инструмент 2: Плавное рентген-скрытие конструкций стен архитектуры -->
+        <section class="control-group" aria-labelledby="label-opacity">
+            <div class="slider-label">
+                <span id="label-opacity">Прозрачность стен здания</span>
+                <span id="opacity-val" class="badge-value">0%</span>
+            </div>
+            <div class="input-wrapper">
+                <input type="range" id="opacity-slider" min="0" max="100" value="0" step="1" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+            </div>
+        </section>
+
+        <!-- Блок системного интерактива -->
+        <footer class="panel-footer">
+            <button class="btn-action" id="btn-load-model" type="button">Открыть проект</button>
+            <button class="btn-action" id="btn-view-pdf" type="button">Посмотреть документацию</button>
+            
+            <!-- Фирменный акцентный элемент логотипа из файла red.png -->
+            <div class="brand-accent" role="presentation"></div>
+        </footer>
+    </main>
+
+    <!-- Адаптивный модальный шлюз для безопасного вывода PDF чертежей -->
+    <div id="pdf-overlay" role="dialog" aria-modal="true" aria-label="Просмотр исполнительной документации">
+        <span class="close-pdf" id="btn-close-pdf" aria-label="Закрыть окно">&times;</span>
+        <div class="pdf-container-wrapper">
+            <!-- Браузер разворачивает документ локально, минуя блокировки внешних скриптов -->
+            <object id="pdf-object" data="document.pdf" type="application/pdf">
+                <div class="pdf-fallback-message">
+                    <p>Встроенный просмотрщик недоступен в данном браузере.</p>
+                    <a href="document.pdf" class="btn-action" download>Скачать PDF-чертеж на устройство</a>
+                </div>
+            </object>
+        </div>
+    </div>
+
+    <!-- Основной управляющий скрипт 3D-движка (Часть 3) -->
+    <script src="app.js" defer></script>
+
+    <!-- Системный воркер автоматической оптимизации кэширования интерфейса -->
     <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./optimize.js')
-                    .then((reg) => console.log('[WhiteLisa UI] Оптимизация загрузки активирована!', reg.scope))
-                    .catch((err) => console.error('[WhiteLisa UI] Ошибка инициализации оптимизатора:', err));
-            });
-        }
+        window.addEventListener('DOMContentLoaded', () => {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('./optimize.js', { scope: './' })
+                    .then((registration) => {
+                        console.log('[WhiteLisa System] Оптимизация слоев запущена. Скоуп:', registration.scope);
+                    })
+                    .catch((error) => {
+                        console.error('[WhiteLisa System] Ошибка регистрации оптимизатора:', error);
+                    });
+            }
+        });
     </script>
 </body>
 </html>
