@@ -1,5 +1,5 @@
 /* ==========================================================================
-   ОБЩИЕ СИСТЕМНЫЕ НАСТРОЙКИ
+   1. ГЛОБАЛЬНЫЕ СИСТЕМНЫЕ СТРУКТУРЫ И СВЕТЛЫЙ ФОН БУМАГИ
    ========================================================================== */
 * {
     box-sizing: border-box;
@@ -15,18 +15,22 @@ body, html {
     overflow: hidden;
     font-family: 'Arial', sans-serif;
     
-    /* Твой идеальный глубокий марочно-бордовый цвет в качестве подложки */
-    background-color: #2b211d; 
+    /* Базовый благородный оттенок плотной бумаги вместо коричневого */
+    background-color: #f5efe6; 
     
-    /* Исправлено на .png! Накладываем полупрозрачную текстуру хлопка */
-    background-image: linear-gradient(rgba(43, 33, 29, 0.4), rgba(43, 33, 29, 0.4)), url('paper.png'); 
+    /* Наложение мягкого светового градиента на текстуру твоего хлопкового листа */
+    background-image: linear-gradient(rgba(245, 239, 230, 0.15), rgba(245, 239, 230, 0.15)), url('paper.png');
     background-size: cover;
     background-position: center;
     background-blend-mode: multiply;
-    color: #ffffff;
+    
+    /* Глубокий кофейный контрастный тон для ультратонких текстов */
+    color: #2b211d; 
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
-/* Контейнер для трехмерного движка Three.js */
+/* Трехмерное окно вывода WebGL (Движок Three.js) */
 #canvas-container {
     width: 100%;
     height: 100%;
@@ -37,58 +41,185 @@ body, html {
 }
 
 /* ==========================================================================
-   ИНТЕРФЕЙС ПАНЕЛИ УПРАВЛЕНИЯ (ЭФФЕКТ СЛЕПОГО ТИСНЕНИЯ)
+   2. СИСТЕМНЫЙ ПРЕЛОАДЕР И ШКАЛА КОНТРОЛЯ ЗАГРУЗКИ ТОМОВ
+   ========================================================================== */
+#preloader-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #f5efe6;
+    background-image: url('paper.png');
+    background-size: cover;
+    background-position: center;
+    z-index: 999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 5%;
+    transition: opacity 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.loader-card {
+    width: 100%;
+    max-width: 450px;
+    background-color: rgba(245, 236, 225, 0.92);
+    border: 1px solid rgba(43, 33, 29, 0.1);
+    
+    /* Эффект слепого тиснения (вдавленности) для прелоадера */
+    box-shadow: inset 2px 2px 8px rgba(0, 0, 0, 0.05),
+                inset -2px -2px 8px rgba(255, 255, 255, 0.7),
+                10px 10px 30px rgba(43, 33, 29, 0.1);
+                
+    padding: 8%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 22px;
+}
+
+.loader-logo {
+    font-size: 2.3rem;
+    font-weight: 100;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: #2b211d;
+}
+
+.loader-sub {
+    font-size: 0.8rem;
+    font-weight: 300;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #c2763e; /* Фирменный пряный карамельный акцент */
+    text-align: center;
+}
+
+/* Контейнер интерактивного прогресс-бара */
+.progress-bar-container {
+    width: 100%;
+    height: 3px;
+    background: rgba(43, 33, 29, 0.08);
+    overflow: hidden;
+    position: relative;
+}
+
+#progress-bar-fill {
+    width: 0%;
+    height: 100%;
+    background-color: #2b211d;
+    /* Плавное побайтовое заполнение полосы */
+    transition: width 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.loader-status {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    font-weight: 300;
+    letter-spacing: 1px;
+    color: rgba(43, 33, 29, 0.7);
+}
+
+/* ==========================================================================
+   3. МОДАЛЬНЫЙ ЭКРАН ОТСЛЕЖИВАНИЯ КРИТИЧЕСКИХ ОШИБОК
+   ========================================================================== */
+#error-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(244, 236, 225, 0.96);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 5%;
+}
+
+.error-card {
+    width: 100%;
+    max-width: 400px;
+    background-color: #f5efe6;
+    border: 1px solid rgba(194, 118, 62, 0.3);
+    box-shadow: 0 15px 35px rgba(43, 33, 29, 0.15);
+    padding: 8%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.error-card h3 {
+    font-size: 1.1rem;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #2b211d;
+}
+
+.error-card p {
+    font-size: 0.85rem;
+    font-weight: 300;
+    color: rgba(43, 33, 29, 0.8);
+    line-height: 1.4;
+}
+/* ==========================================================================
+   4. ГЛАВНАЯ ПАНЕЛЬ ИНТЕРФЕЙСА (ЭФФЕКТ СЛЕПОГО ТИСНЕНИЯ И ВГНУТОСТИ)
    ========================================================================== */
 .ui-panel {
     position: absolute;
     top: 3%;
     left: 3%;
-    width: 30%;
-    max-width: 400px;
-    min-width: 280px;
+    width: 32%;
+    max-width: 420px;
+    min-width: 290px;
     height: auto;
     max-height: 94%;
     z-index: 10;
     
-    /* Бордово-кофейный плотный фон плашки с прозрачностью */
-    background-color: rgba(43, 33, 29, 0.88); 
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background-color: rgba(245, 239, 230, 0.93);
+    border: 1px solid rgba(43, 33, 29, 0.1);
     
-    /* Эффект легкой вогнутости плашек внутрь фона (внутренние тени) */
-    box-shadow: inset 3px 3px 10px rgba(0, 0, 0, 0.8), 
-                inset -1px -1px 5px rgba(255, 255, 255, 0.05),
-                5px 5px 25px rgba(0, 0, 0, 0.6);
+    /* Сложные составные тени для создания ощущения вдавливания панели в лист бумаги */
+    box-shadow: inset 3px 3px 10px rgba(0, 0, 0, 0.06), 
+                inset -3px -3px 10px rgba(255, 255, 255, 0.7),
+                8px 8px 24px rgba(43, 33, 29, 0.1);
                 
     padding: 6%;
     display: flex;
     flex-direction: column;
-    gap: 24px;
-    border-radius: 0px; /* Изысканные нескругленные формы */
+    gap: 26px;
+    border-radius: 0px; /* Принципиальное отсутствие закруглений */
 }
 
-/* Ультратонкие шрифты заголовков */
+/* Ультратонкие изысканные заголовки в стиле April */
 h1 {
-    font-size: 1.7rem;
+    font-size: 1.8rem;
     font-weight: 100;
-    letter-spacing: 3px;
+    letter-spacing: 4px;
     text-transform: uppercase;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(43, 33, 29, 0.15);
+    padding-bottom: 14px;
+    color: #2b211d;
 }
 
 h2 {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     font-weight: 300;
     text-transform: uppercase;
     letter-spacing: 2px;
-    color: #d4c7b6; /* Кофейно-карамельный бледный оттенок */
+    color: #c2763e; /* Фирменный карамельный акцент */
 }
 
 /* Блоки управления ползунками */
 .control-group {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
 }
 
 .slider-label {
@@ -97,7 +228,19 @@ h2 {
     font-size: 0.75rem;
     font-weight: 300;
     letter-spacing: 1px;
-    color: rgba(255, 255, 255, 0.8);
+    color: rgba(43, 33, 29, 0.8);
+}
+
+.badge-value {
+    font-weight: 400;
+    color: #2b211d;
+}
+
+.input-wrapper {
+    width: 100%;
+    position: relative;
+    display: flex;
+    align-items: center;
 }
 
 /* Ползунки настройки систем */
@@ -105,67 +248,88 @@ input[type="range"] {
     width: 100%;
     -webkit-appearance: none;
     appearance: none;
-    background: rgba(0, 0, 0, 0.4);
-    height: 4px;
+    background: rgba(43, 33, 29, 0.1);
+    height: 3px;
     outline: none;
-    accent-color: #c2763e; /* Наш пряный оранжевый акцент */
+    accent-color: #c2763e;
     border-radius: 0px;
+    cursor: pointer;
 }
 
 input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 12px;
-    height: 12px;
-    background: #ffffff;
+    width: 10px;
+    height: 10px;
+    background: #2b211d;
     border-radius: 0px;
     cursor: pointer;
-    box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    transition: transform 0.1s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.3);
 }
 
 /* ==========================================================================
-   ИНТЕРАКТИВНЫЕ КНОПКИ (ПРОЗРАЧНОСТЬ И СВЕЧЕНИЕ ПРИ НАЖАТИИ)
+   5. ИНТЕРАКТИВНЫЕ КНОПКИ (1-ПИКСЕЛЬНЫЙ БОРДЕР С СВЕЧЕНИЕМ И ОВЕРЛЕЕМ)
    ========================================================================== */
+.panel-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: auto;
+}
+
 .btn-action {
     width: 100%;
     padding: 16px;
     background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    color: #ffffff;
+    border: 1px solid rgba(43, 33, 29, 0.4);
+    color: #2b211d;
     font-size: 0.8rem;
     font-weight: 300;
     text-transform: uppercase;
     letter-spacing: 2px;
     cursor: pointer;
-    border-radius: 0px; 
+    border-radius: 0px;
+    outline: none;
     transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .btn-action:hover {
-    border-color: rgba(255, 255, 255, 1);
-    background-color: rgba(255, 255, 255, 0.04);
+    border-color: rgba(43, 33, 29, 1);
+    background-color: rgba(43, 33, 29, 0.02);
 }
 
-/* Тонкоеglow-свечение при непосредственном клике */
+/* Свечение при клике с белым полупрозрачным оверлеем */
 .btn-action:active {
-    box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
-    background-color: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 14px rgba(43, 33, 29, 0.25);
+    background-color: rgba(255, 255, 255, 0.6);
+    border-color: #2b211d;
 }
 
-/* Исправлено на .png! Графический акцент твоей студии WhiteLisa */
+.btn-error-retry {
+    padding: 12px;
+    font-size: 0.75rem;
+    margin-top: 10px;
+}
+
+/* Пропорциональная интеграция твоего логотипа red.png */
 .brand-accent {
-    width: 45px;
-    height: 45px;
-    background-image: url('red.png'); 
+    width: 50px;
+    height: 50px;
+    background-image: url('red.png');
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
     align-self: flex-end;
-    margin-top: auto;
+    margin-top: 10px;
+    opacity: 0.85;
 }
 
 /* ==========================================================================
-   МОДАЛЬНОЕ ОКНО ПРОСМОТРА PDF (АДАПТИВНЫЙ ИНТЕРФЕЙС)
+   6. МОДАЛЬНЫЙ ШЛЮЗ ПРОСМОТРА PDF ДОКУМЕНТАЦИИ
    ========================================================================== */
 #pdf-overlay {
     position: fixed;
@@ -173,41 +337,62 @@ input[type="range"]::-webkit-slider-thumb {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(43, 33, 29, 0.96); /* Плотный марочный цвет фона */
+    background-color: rgba(244, 239, 230, 0.97);
+    background-image: url('paper.png');
+    background-size: cover;
     z-index: 100;
     display: none;
     justify-content: center;
     align-items: center;
-    padding: 4%;
+    padding: 3%;
 }
 
-#pdf-frame {
-    width: 92%;
-    height: 92%;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.9);
+.pdf-container-wrapper {
+    width: 94%;
+    height: 94%;
     background: #ffffff;
+    box-shadow: 0 20px 45px rgba(43, 33, 29, 0.15);
+    border: 1px solid rgba(43, 33, 29, 0.1);
+    position: relative;
 }
 
-/* Тонкая минималистичная кнопка закрытия документа */
+#pdf-object {
+    width: 100%;
+    height: 100%;
+}
+
+.pdf-fallback-message {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    padding: 10%;
+    text-align: center;
+    background-color: #f5efe6;
+}
+
 .close-pdf {
     position: absolute;
-    top: 2%;
-    right: 4%;
-    font-size: 2.5rem;
+    top: 1.5%;
+    right: 2.5%;
+    font-size: 3rem;
     font-weight: 100;
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(43, 33, 29, 0.4);
     cursor: pointer;
+    z-index: 110;
     transition: color 0.2s, transform 0.2s;
 }
 
 .close-pdf:hover {
-    color: #ffffff;
+    color: #2b211d;
     transform: scale(1.1);
 }
 
 /* ==========================================================================
-   АДАПТИВНОСТЬ ПОД МОБИЛЬНЫЕ СМАРТФОНЫ (В ПРОЦЕНТАХ)
+   7. АДАПТИВНАЯ СЕТКА ПОД МОБИЛЬНЫЕ УСТРОЙСТВА (В ПРОЦЕНТАХ)
    ========================================================================== */
 @media (max-width: 768px) {
     .ui-panel {
@@ -215,24 +400,32 @@ input[type="range"]::-webkit-slider-thumb {
         left: 4%;
         top: auto;
         bottom: 4%;
-        max-height: 45%;
+        max-height: 48%;
         padding: 5%;
         gap: 16px;
+        box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.05), 
+                    6px -6px 20px rgba(43, 33, 29, 0.08);
     }
     
     h1 {
-        font-size: 1.3rem;
+        font-size: 1.4rem;
         padding-bottom: 8px;
     }
     
     .btn-action {
-        padding: 12px;
+        padding: 14px;
         font-size: 0.75rem;
     }
     
-    #pdf-frame {
+    .pdf-container-wrapper {
         width: 100%;
-        height: 85%;
-        margin-top: 10%;
+        height: 88%;
+        margin-top: 12%;
+    }
+    
+    .close-pdf {
+        top: 2%;
+        right: 5%;
+        font-size: 2.5rem;
     }
 }
