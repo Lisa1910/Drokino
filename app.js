@@ -1,0 +1,235 @@
+/* ==========================================================================
+   ОБЩИЕ СИСТЕМНЫЕ НАСТРОЙКИ
+   ========================================================================== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+body, html {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: 'Arial', sans-serif;
+    /* Базовый глубокий марочный цвет для исключения белых просветов */
+    background-color: #2b211d; 
+    /* Текстура хлопкового листа бумаги */
+    background-image: url('paper.png'); 
+    background-size: cover;
+    background-position: center;
+    color: #ffffff;
+}
+
+/* Контейнер для трехмерного движка */
+#canvas-container {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+/* ==========================================================================
+   ИНТЕРФЕЙС ПАНЕЛИ УПРАВЛЕНИЯ (ЭФФЕКТ СЛЕПОГО ТИСНЕНИЯ)
+   ========================================================================== */
+.ui-panel {
+    position: absolute;
+    top: 3%;
+    left: 3%;
+    width: 30%;
+    max-width: 400px;
+    min-width: 280px;
+    height: auto;
+    max-height: 94%;
+    z-index: 10;
+    
+    /* Изысканный глубокий марочный фон с прозрачностью */
+    background-color: rgba(43, 33, 29, 0.88); 
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    
+    /* Эффект легкой вогнутости элемента: глубокие внутренние тени */
+    box-shadow: inset 3px 3px 10px rgba(0, 0, 0, 0.8), 
+                inset -1px -1px 5px rgba(255, 255, 255, 0.05),
+                5px 5px 25px rgba(0, 0, 0, 0.6);
+                
+    padding: 6%;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    border-radius: 0px; /* Строгое отсутствие скруглений */
+}
+
+/* Ультратонкие, изысканные заголовки в стиле April */
+h1 {
+    font-size: 1.7rem;
+    font-weight: 100;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    padding-bottom: 12px;
+}
+
+h2 {
+    font-size: 0.85rem;
+    font-weight: 300;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #d4c7b6; /* Кофейно-карамельный бледный оттенок */
+}
+
+/* Блоки управления ползунками */
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.slider-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    font-weight: 300;
+    letter-spacing: 1px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* Ползунки настройки систем */
+input[type="range"] {
+    width: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+    background: rgba(0, 0, 0, 0.4);
+    height: 4px;
+    outline: none;
+    accent-color: #c2763e; /* Пряный карамельный акцент */
+    border-radius: 0px;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    background: #ffffff;
+    border-radius: 0px;
+    cursor: pointer;
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}
+
+/* ==========================================================================
+   ИНТЕРАКТИВНЫЕ КНОПКИ (ПРОЗРАЧНОСТЬ И СВЕЧЕНИЕ ПРИ НАЖАТИИ)
+   ========================================================================== */
+.btn-action {
+    width: 100%;
+    padding: 16px;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    color: #ffffff;
+    font-size: 0.8rem;
+    font-weight: 300;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    cursor: pointer;
+    border-radius: 0px; /* Квадратные формы */
+    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.btn-action:hover {
+    border-color: rgba(255, 255, 255, 1);
+    background-color: rgba(255, 255, 255, 0.04);
+}
+
+/* Эффект яркого свечения при непосредственном клике */
+.btn-action:active {
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Графический брендовый акцент */
+.brand-accent {
+    width: 45px;
+    height: 45px;
+    background-image: url('red.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    align-self: flex-end;
+    margin-top: auto;
+}
+
+/* ==========================================================================
+   МОДАЛЬНОЕ ОКНО ПРОСМОТРА PDF (АДАПТИВНЫЙ ИНТЕРФЕЙС)
+   ========================================================================== */
+#pdf-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(43, 33, 29, 0.96); /* Плотный марочный фон бумаги */
+    z-index: 100;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    padding: 4%;
+}
+
+#pdf-frame {
+    width: 92%;
+    height: 92%;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.9);
+    background: #ffffff;
+}
+
+/* Тонкая минималистичная кнопка закрытия документа */
+.close-pdf {
+    position: absolute;
+    top: 2%;
+    right: 4%;
+    font-size: 2.5rem;
+    font-weight: 100;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    transition: color 0.2s, transform 0.2s;
+}
+
+.close-pdf:hover {
+    color: #ffffff;
+    transform: scale(1.1);
+}
+
+/* ==========================================================================
+   АДАПТИВНОСТЬ ПОД МОБИЛЬНЫЕ СМАРТФОНЫ (В ПРОЦЕНТАХ)
+   ========================================================================== */
+@media (max-width: 768px) {
+    .ui-panel {
+        width: 92%;
+        left: 4%;
+        top: auto;
+        bottom: 4%;
+        max-height: 45%;
+        padding: 5%;
+        gap: 16px;
+    }
+    
+    h1 {
+        font-size: 1.3rem;
+        padding-bottom: 8px;
+    }
+    
+    .btn-action {
+        padding: 12px;
+        font-size: 0.75rem;
+    }
+    
+    #pdf-frame {
+        width: 100%;
+        height: 85%;
+        margin-top: 10%;
+    }
+}
