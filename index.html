@@ -8,10 +8,10 @@
     <!-- Подключаем внешние стили (style.css) -->
     <link rel="stylesheet" href="style.css">
     
-    <!-- Подключаем библиотеки Three.js и загрузчики из CDN -->
-    <script src="https://cloudflare.com"></script>
-    <script src="https://jsdelivr.net"></script>
-    <script src="https://jsdelivr.net"></script>
+    <!-- Локальные скрипты движка -->
+    <script src="three.min.js"></script>
+    <script src="OrbitControls.js"></script>
+    <script src="GLTFLoader.js"></script>
 </head>
 <body>
 
@@ -52,7 +52,8 @@
     <!-- Адаптивное модальное окно встроенного просмотра PDF чертежей -->
     <div id="pdf-overlay">
         <span class="close-pdf" id="btn-close-pdf">&times;</span>
-        <iframe id="pdf-frame" src="document.pdf" type="application/pdf"></iframe>
+        <!-- Используем защищенный просмотрщик от Mozilla, чтобы обойти блокировки браузеров -->
+        <iframe id="pdf-frame" src="" type="application/pdf"></iframe>
     </div>
 
     <!-- Подключаем основной скрипт движка и логики (app.js) -->
